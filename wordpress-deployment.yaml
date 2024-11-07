@@ -23,24 +23,24 @@ spec:
         - containerPort: 9000
         volumeMounts:
           - name: wordpress-persistent-storage
-            mountPath: /var/www/html
+            mountPath: /var/www/html/wordpress/wp-content
         env:
-          - name: WORDPRESS_DB_HOST
+          - name: DB_HOST
             valueFrom:
               configMapKeyRef:
                 name: wordpress-conf
                 key: WORDPRESS_DB_HOST
-          - name: WORDPRESS_DB_USER
+          - name: DB_USER
             valueFrom:
               configMapKeyRef:
                 name: wordpress-conf
                 key: WORDPRESS_DB_USER
-          - name: WORDPRESS_DB_NAME
+          - name: DB_NAME
             valueFrom:
               configMapKeyRef:
                 name: wordpress-conf
                 key: WORDPRESS_DB_NAME
-          - name: WORDPRESS_DB_PASSWORD
+          - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: wordpress-db-mariadb-galera
