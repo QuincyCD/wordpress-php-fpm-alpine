@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: wordpress
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: wordpress
@@ -13,23 +12,53 @@ spec:
         app: wordpress
     spec:
       containers:
-        - name: wordpress
-          image: wordpress:6.6.2-php8.3-fpm-alpine
-          ports:
-            - containerPort: 9000
-          env:
+      - name: wordpress
+        image: wordpress:6.6.2-php8.3-fpm-alpine
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9000
+      env:
             - name: WORDPRESS_DB_HOST
-              value: "<YOUR_DB_HOST>"
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: WORDPRESS_DB_HOST
             - name: WORDPRESS_DB_USER
-              value: "<YOUR_DB_USER>"
-            - name: WORDPRESS_DB_PASSWORD
-              value: "<YOUR_DB_PASSWORD>"
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: WORDPRESS_DB_USER
             - name: WORDPRESS_DB_NAME
-              value: "<YOUR_DB_NAME>"
-          volumeMounts:
-            - mountPath: /var/www/html
-              name: wordpress-persistent-storage
-      volumes:
-        - name: wordpress-persistent-storage
-          persistentVolumeClaim:
-            claimName: wordpress-pvc
+              valueFrom:
+                configMapKeyRef:
+                  name: wordpress-config
+                  key: WORDPRESS_DB_NAME
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-mariadb-galera
+                  key: mariadb-password
+      volumeMounts:
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html
+    volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: wordpress-pv-claim
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pv-claim
+  namespace: wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

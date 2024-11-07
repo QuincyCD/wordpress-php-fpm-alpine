@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: certbot
+spec:
+  selector:
+    matchLabels:
+      app: certbot
+  template:
+    metadata:
+      labels:
+        app: certbot
+    spec:
+      containers:
+      - name: certbot
+        image: certbot/certbot:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
