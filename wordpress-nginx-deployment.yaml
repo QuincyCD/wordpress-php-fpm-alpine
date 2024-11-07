@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-webserver
+  name: wordpress-nginx
 spec:
   selector:
     matchLabels:
-      app: nginx-webserver
+      app: wordpress-nginx
   template:
     metadata:
       labels:
-        app: nginx-webserver
+        app: wordpress-nginx
     spec:
       containers:
-      - name: nginx-webserver
+      - name: nginx-nginx
         image: nginx:1.27-alpine
         resources:
           limits:
@@ -21,15 +21,15 @@ spec:
         ports:
         - containerPort: 80
         volumeMounts:
-            - name: nginx-config
+            - name: nginx-conf
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
             - name: wordpress-persistent-storage
               mountPath: /var/www/html
       volumes:
-        - name: nginx-config
+        - name: nginx-conf
           configMap:
-            name: nginx-config
+            name: nginx-conf
         - name: wordpress-persistent-storage
           persistentVolumeClaim:
             claimName: wordpress-pv-claim
