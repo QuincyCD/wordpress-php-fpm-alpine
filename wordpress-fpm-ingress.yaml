@@ -3,7 +3,8 @@ kind: Ingress
 metadata:
   name: wordpress-nginx-ingress
   labels:
-    name: wordpress-nginx
+    name: wordpress
+    namespace: wordpress
 spec:
   rules:
   - host: <Host>
